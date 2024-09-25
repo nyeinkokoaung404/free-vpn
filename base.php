@@ -1181,7 +1181,7 @@ function generateReadme($table1, $table2, $table3)
     
 #### How It Works
     
-1. **Telegram Integration**: HiN VPN utilizes a Telegram bot to gather VPN configuration files from contributors. This bot acts as a central hub where users can submit their VPN configurations, ensuring a diverse and robust set of options for subscribers.
+1. **Telegram Integration**: 404 VPN utilizes a Telegram bot to gather VPN configuration files from contributors. This bot acts as a central hub where users can submit their VPN configurations, ensuring a diverse and robust set of options for subscribers.
     
 2. **Subscription Link**: Once the configurations are collected, 404 VPN processes them and provides a subscription link. This link is freely accessible to anyone, allowing them to download the latest VPN configurations directly to their devices.
     

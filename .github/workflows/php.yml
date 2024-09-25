@@ -1,4 +1,4 @@
-name: "HiN VPN"
+name: "4-0-4 VPN"
 
 on:
   workflow_dispatch:
@@ -20,8 +20,8 @@ jobs:
       - name: Execute PHP script
         run: |
           php base.php
-          git config --global user.email "yebekhe@gmail.com"
-          git config --global user.name "yebekhe"
+          git config --global user.email "dawmoesandaroo255@gmail.com"
+          git config --global user.name "n2ka404"
           git config credential.helper store
           git add -A
           git commit -m "🚀 Last Run - $(TZ='Asia/Yangon' date '+%Y-%m-%d %H:%M:%S')"

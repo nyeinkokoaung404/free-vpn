@@ -1318,7 +1318,7 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
             <div class="container">
                 <div class="topbar">
                     <div>
-                        <h1>HiN VPN</h1>
+                        <h1>4-0-4 VPN</h1>
                         <p>Your Gateway to Secure and Free Internet Access</p>
                     </div>
                     <div class="theme-toggle" id="theme-toggle">
@@ -1327,8 +1327,8 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
                 </div>
                 <div class="row">
                     <div class="col-12 feature">
-                        <h3>About HiN VPN</h3>
-                        <p><strong>HiN VPN</strong> is an open-source project designed to provide secure, unrestricted internet access. It uses Telegram for collecting and distributing VPN configurations, offering a community-driven approach to online privacy.</p>
+                        <h3>About 4-0-4 VPN</h3>
+                        <p><strong>4-0-4 VPN</strong> is an open-source project designed to provide secure, unrestricted internet access. It uses Telegram for collecting and distributing VPN configurations, offering a community-driven approach to online privacy.</p>
                     </div>
                     <div class="col-12 feature">
                         <h4>How It Works</h4>
@@ -1350,7 +1350,7 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
                     </div>
                     <div class="col-12 feature">
                         <h4>Subscription Links</h4>
-                        <p>Get started with HiN VPN using the subscription links below. These links provide access to the latest VPN configurations.</p>
+                        <p>Get started with 4-0-4 VPN using the subscription links below. These links provide access to the latest VPN configurations.</p>
                         <!-- Placeholder for dynamic content -->
                         ' .
                 $drop1 .
@@ -1363,17 +1363,17 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
                         ' .
                 $drop3 .
                 '
-                        <p>This Drop-Downs provides a quick reference for the different subscription links available through HiN VPN, allowing users to easily select the one that best suits their needs.</p>
+                        <p>This Drop-Downs provides a quick reference for the different subscription links available through 4-0-4 VPN, allowing users to easily select the one that best suits their needs.</p>
                     </div>
                     <div class="col-12 footer">
                         <h4>The Last Word</h4>
-                        <p>HiN VPN is more than just a VPN service; it\'s a movement towards a more secure and open internet. By leveraging the power of community and open-source technology, HiN VPN is paving the way for a future where online privacy is a fundamental right for all.</p>
+                        <p>4-0-4 VPN is more than just a VPN service; it\'s a movement towards a more secure and open internet. By leveraging the power of community and open-source technology, 4-0-4 VPN is paving the way for a future where online privacy is a fundamental right for all.</p>
                         <div>
-                            <a href="https://github.com/itsyebekhe/HiN-VPN" target="_blank"><i class="bi bi-github"></i></a>
-                            <a href="https://x.com/yebekhe" target="_blank"><i class="bi bi-twitter"></i></a>
-                            <a href="https://t.me/Here_is_Nowhere" target="_blank"><i class="bi bi-telegram"></i></a>
+                            <a href="https://github.com/nyeinkokoaung/free-vpn" target="_blank"><i class="bi bi-github"></i></a>
+                            <a href="https://x.com/nkka404" target="_blank"><i class="bi bi-twitter"></i></a>
+                            <a href="https://t.me/nkka404" target="_blank"><i class="bi bi-telegram"></i></a>
                         </div>
-                        <p>&copy; ' . date("Y") . ' HiN VPN. All rights reserved.</p>
+                        <p>&copy; ' . date("Y") . ' 4-0-4 VPN. All rights reserved.</p>
                     </div>
                 </div>
             </div>
@@ -1543,9 +1543,9 @@ $message = "⏱ {$tehranTime}
 ---- 𝗖𝗢𝗣𝗬 ----
 
 ---- 𝗠𝗢𝗥𝗘 ----
-🚹 <a href='https://itsyebekhe.github.io/HiN-VPN/'>𝗛.𝗜.𝗡 𝗚𝗜𝗧𝗛𝗨𝗕 𝗣𝗔𝗚𝗘</a>
+🚹 <a href='https://nyeinkokoaung404.github.io/free-vpn/'>4.0.4 𝗚𝗜𝗧𝗛𝗨𝗕 𝗣𝗔𝗚𝗘</a>
 ---- 𝗠𝗢𝗥𝗘 ----
 
-💬 <a href='https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=Your%20Gateway%20to%20Secure%20and%20Free%20Internet%20Access%0AHiN%20VPN%20is%20an%20open-source%20project%20designed%20to%20provide%20secure,%20unrestricted%20internet%20access.%20It%20uses%20Telegram%20for%20collecting%20and%20distributing%20VPN%20configurations,%20offering%20a%20community-driven%20approach%20to%20online%20privacy.'>𝗖𝗟𝗜𝗖𝗞 𝗧𝗢 𝗦𝗛𝗔𝗥𝗘 𝗛.𝗜.𝗡!</a>";
+💬 <a href='https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=Your%20Gateway%20to%20Secure%20and%20Free%20Internet%20Access%0AHiN%20VPN%20is%20an%20open-source%20project%20designed%20to%20provide%20secure,%20unrestricted%20internet%20access.%20It%20uses%20Telegram%20for%20collecting%20and%20distributing%20VPN%20configurations,%20offering%20a%20community-driven%20approach%20to%20online%20privacy.'>𝗖𝗟𝗜𝗖𝗞 𝗧𝗢 𝗦𝗛𝗔𝗥𝗘 4.0.4!</a>";
 
 sendMessage($botToken, -1002043507701, $message, "html", $keyboard);

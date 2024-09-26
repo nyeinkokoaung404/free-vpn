@@ -19,7 +19,8 @@ function getTheType($input)
     ];
     foreach ($types as $type) {
         if (substr($input, 0, strlen($type) + 3) === $type . "://") {
-            if ($type === "hy2") return "hysteria2";
+            if ($type === "hy2")
+                return "hysteria2";
             return $type;
         }
     }
@@ -104,7 +105,7 @@ function getTelegramChannelConfigs($username)
         "configs.json",
         $GIT_TOKEN
     );
-    
+
     echo "Configs Arrived!⚡️\n";
     if ($configs["status"] === "OK") {
         unset($configs["status"]);
@@ -125,7 +126,7 @@ function getTelegramChannelConfigs($username)
                         $source
                     );
                     if ($correctedConfigArray !== false) {
-                        $configLocation =  getFlags($correctedConfigArray["loc"]) . " " . $correctedConfigArray["loc"];
+                        $configLocation = getFlags($correctedConfigArray["loc"]) . " " . $correctedConfigArray["loc"];
                         $correctedConfig = $correctedConfigArray["config"];
                         $mix .= $correctedConfig . "\n";
                         $$configType .= $correctedConfig . "\n";
@@ -153,8 +154,8 @@ function getTelegramChannelConfigs($username)
                     "subscription/source/hiddify/" . $source,
                     base64_encode(
                         generateHiddifyTags("@" . $source) .
-                            "\n" .
-                            $configsSource
+                        "\n" .
+                        $configsSource
                     )
                 );
                 echo "@{$source} ✅\n";
@@ -216,8 +217,8 @@ function getTelegramChannelConfigs($username)
                     "subscription/hiddify/" . $filename,
                     base64_encode(
                         generateHiddifyTags(strtoupper($filename)) .
-                            "\n" .
-                            $configsType
+                        "\n" .
+                        $configsType
                     )
                 );
                 echo "#{$filename} ✅\n";
@@ -269,8 +270,8 @@ function getTelegramChannelConfigs($username)
                     "subscription/location/hiddify/" . $location,
                     base64_encode(
                         generateHiddifyTags(strtoupper($location)) .
-                            "\n" .
-                            $configsLocation
+                        "\n" .
+                        $configsLocation
                     )
                 );
                 echo "#{$location} ✅\n";
@@ -451,7 +452,8 @@ function generateReadmeTable($titles, $data)
     $table .= $separator;
 
     foreach ($data as $row) {
-        $table .= "| " . urldecode(implode(" | ", $row)) . " |" . PHP_EOL;
+        $row[0] = urldecode($row[0]);
+        $table .= "| " . implode(" | ", $row) . " |" . PHP_EOL;
     }
 
     return $table;
@@ -468,7 +470,7 @@ function listFilesInDirectory($directory)
     if ($handle = opendir($directory)) {
         while (false !== ($entry = readdir($handle))) {
             if ($entry != "." && $entry != "..") {
-                $fullPath = $directory . "/" . str_replace("+", "%20", urlencode($entry));
+                $fullPath = $directory . "/" . str_replace(["+", " "], ["%20", "%20"], urlencode($entry));
                 if (is_dir($fullPath)) {
                     $filePaths = array_merge(
                         $filePaths,
@@ -1066,10 +1068,96 @@ function sendMessage($botToken, $chatId, $message, $parse_mode, $keyboard)
     echo /** @scrutinizer ignore-type */ $response;
 }
 
+function sendPhoto($token, $chat_id, $photo, $caption = '', $parse_mode = 'HTML', $disable_notification = false, $reply_to_message_id = null, $reply_markup = null)
+{
+    // Telegram Bot API URL
+    $url = "https://api.telegram.org/bot{$token}/sendPhoto";
+
+    // Prepare the cURL request
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+
+    // Prepare the POST fields
+    $postFields = [
+        'chat_id' => $chat_id,
+        'photo' => $photo,
+        'caption' => $caption,
+        'parse_mode' => $parse_mode,
+        'disable_notification' => $disable_notification,
+    ];
+
+    // Add reply_to_message_id if provided
+    if ($reply_to_message_id !== null) {
+        $postFields['reply_to_message_id'] = $reply_to_message_id;
+    }
+
+    // Add reply_markup if provided
+    if ($reply_markup !== null) {
+        $postFields['reply_markup'] = json_encode($reply_markup);
+    }
+
+    // Set the POST fields
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postFields);
+
+    // Execute the cURL request
+    $response = curl_exec($ch);
+
+    // Check for cURL errors
+    if (curl_errno($ch)) {
+        $error_msg = curl_error($ch);
+        curl_close($ch);
+        throw new Exception("cURL error: $error_msg");
+    }
+
+    // Close the cURL session
+    curl_close($ch);
+
+    // Decode the JSON response
+    $responseData = json_decode($response, true);
+
+    // Check if the response contains an error
+    if (!$responseData['ok']) {
+        throw new Exception("Telegram API error: {$responseData['description']}");
+    }
+
+    // Return the sent message
+    return $responseData['result'];
+}
+
+function generateQRCode($data, $size = '200x200', $charsetSource = 'UTF-8', $charsetTarget = 'UTF-8', $ecc = 'L', $color = '0-0-0', $bgcolor = '255-255-255', $margin = 1, $qzone = 0, $format = 'png')
+{
+    // Base URL for the QR code generation API
+    $baseUrl = "https://api.qrserver.com/v1/create-qr-code/";
+
+    // URL-encode the data to ensure it's safely passed in the URL
+    $data = urlencode($data);
+
+    // Construct the query parameters
+    $params = [
+        'data' => $data,
+        'size' => $size,
+        'charset-source' => $charsetSource,
+        'charset-target' => $charsetTarget,
+        'ecc' => $ecc,
+        'color' => $color,
+        'bgcolor' => $bgcolor,
+        'margin' => $margin,
+        'qzone' => $qzone,
+        'format' => $format
+    ];
+
+    // Build the full URL with query parameters
+    $fullUrl = $baseUrl . '?' . http_build_query($params);
+
+    // Return the full URL to the generated QR code image
+    return $fullUrl;
+}
+
 function generateHiddifyTags($type)
 {
-    $profileTitle = base64_encode("{$type} | HiN 🫧");
-    return "#profile-title: base64:{$profileTitle}\n#profile-update-interval: 1\n#subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n#support-url: https://hingroup.t.me\n#profile-web-page-url: https://Here_is_Nowhere.t.me
+    $profileTitle = base64_encode("{$type} | 4-0-4 🫧");
+    return "#profile-title: base64:{$profileTitle}\n#profile-update-interval: 1\n#subscription-userinfo: upload=0; download=0; total=10737418240000000; expire=2546249531\n#support-url: https://nkka404.t.me\n#profile-web-page-url: https://nkka404.t.me
 ";
 }
 
@@ -1175,30 +1263,30 @@ function addStringToBeginning($array, $string)
 function generateReadme($table1, $table2, $table3)
 {
     $base =
-        "### 404 VPN: Your Gateway to Secure and Free Internet Access
+        "### 4-0-4 VPN: Your Gateway to Secure and Free Internet Access
 
-**404 VPN** stands out as a pioneering open-source project designed to empower users with secure, unrestricted internet access. Unlike traditional VPN services, 404 VPN leverages the Telegram platform to collect and distribute VPN configurations, offering a unique and community-driven approach to online privacy and security.
+**4-0-4 VPN** stands out as a pioneering open-source project designed to empower users with secure, unrestricted internet access. Unlike traditional VPN services, 4-0-4 VPN leverages the Telegram platform to collect and distribute VPN configurations, offering a unique and community-driven approach to online privacy and security.
     
 #### How It Works
     
-1. **Telegram Integration**: 404 VPN utilizes a Telegram bot to gather VPN configuration files from contributors. This bot acts as a central hub where users can submit their VPN configurations, ensuring a diverse and robust set of options for subscribers.
+1. **Telegram Integration**: 4-0-4 VPN utilizes a Telegram bot to gather VPN configuration files from contributors. This bot acts as a central hub where users can submit their VPN configurations, ensuring a diverse and robust set of options for subscribers.
     
-2. **Subscription Link**: Once the configurations are collected, 404 VPN processes them and provides a subscription link. This link is freely accessible to anyone, allowing them to download the latest VPN configurations directly to their devices.
+2. **Subscription Link**: Once the configurations are collected, 4-0-4 VPN processes them and provides a subscription link. This link is freely accessible to anyone, allowing them to download the latest VPN configurations directly to their devices.
     
-3. **Open Source**: Being an open-source project, 404 VPN encourages collaboration and transparency. The source code is available for anyone to review, contribute to, or modify, ensuring that the service remains secure and up-to-date with the latest technological advancements.
+3. **Open Source**: Being an open-source project, 4-0-4 VPN encourages collaboration and transparency. The source code is available for anyone to review, contribute to, or modify, ensuring that the service remains secure and up-to-date with the latest technological advancements.
     
-4. **PHP and Python Backend**: The backend of 404 VPN is developed using PHP + Python (Thanks to @NekoHanaku), two widely-used server-side scripting language known for their flexibility and ease of use. This choice of technology ensures that the service can be easily maintained and scaled as needed.
+4. **PHP and Python Backend**: The backend of 4-0-4 VPN is developed using PHP + Python (Thanks to @NekoHanaku), two widely-used server-side scripting language known for their flexibility and ease of use. This choice of technology ensures that the service can be easily maintained and scaled as needed.
     
 #### Benefits
     
-- **Free Access**: 404 VPN is completely free to use, making it an excellent choice for users who are looking for a cost-effective solution to enhance their online privacy.
-- **Community-Driven**: By relying on community contributions, 404 VPN offers a wide range of VPN configurations, ensuring that users have access to a variety of options that suit their specific needs.
-- **Enhanced Security**: The open-source nature of 404 VPN allows for constant scrutiny and improvement, ensuring that the service remains secure and resilient against potential threats.
+- **Free Access**: HiN VPN is completely free to use, making it an excellent choice for users who are looking for a cost-effective solution to enhance their online privacy.
+- **Community-Driven**: By relying on community contributions, 4-0-4 VPN offers a wide range of VPN configurations, ensuring that users have access to a variety of options that suit their specific needs.
+- **Enhanced Security**: The open-source nature of HiN VPN allows for constant scrutiny and improvement, ensuring that the service remains secure and resilient against potential threats.
 - **Easy to Use**: With a simple subscription link, users can quickly and easily set up their VPN connection, making the process accessible to both tech-savvy individuals and newcomers alike.
     
 #### Subscription Links
     
-To get started with 404 VPN, simply follow the subscription links provided below. This link will grant you access to the latest VPN configurations, allowing you to secure your internet connection and browse the web with peace of mind.
+To get started with HiN VPN, simply follow the subscription links provided below. This link will grant you access to the latest VPN configurations, allowing you to secure your internet connection and browse the web with peace of mind.
     
 " .
         $table1 .
@@ -1216,9 +1304,9 @@ Below is a table that shows the generated subscription links from each Location,
         $table3 .
         "
     
-This table provides a quick reference for the different subscription links available through HiN VPN, allowing users to easily select the one that best suits their needs.
+This table provides a quick reference for the different subscription links available through 4-0-4 VPN, allowing users to easily select the one that best suits their needs.
     
-**404 VPN** is more than just a VPN service; it's a movement towards a more secure and open internet. By leveraging the power of community and open-source technology, HiN VPN is paving the way for a future where online privacy is a fundamental right for all.";
+**4-0-4 VPN** is more than just a VPN service; it's a movement towards a more secure and open internet. By leveraging the power of community and open-source technology, 4-0-4 VPN is paving the way for a future where online privacy is a fundamental right for all.";
 
     return $base;
 }
@@ -1231,7 +1319,7 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>404 VPN: Your Gateway to Secure and Free Internet Access</title>
+            <title>4-0-4 VPN: Your Gateway to Secure and Free Internet Access</title>
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
             <style>
@@ -1350,26 +1438,26 @@ function generateReadmeWeb($drop1, $drop2, $drop3)
                     </div>
                     <div class="col-12 feature">
                         <h4>Subscription Links</h4>
-                        <p>Get started with 4-0-4 VPN using the subscription links below. These links provide access to the latest VPN configurations.</p>
+                        <p>Get started with HiN VPN using the subscription links below. These links provide access to the latest VPN configurations.</p>
                         <!-- Placeholder for dynamic content -->
                         ' .
-                $drop1 .
-                '
+        $drop1 .
+        '
                         <p>Below is a Drop-Down menu that shows the generated subscription links from each Source, providing users with a variety of options to choose from.</p>
                         ' .
-                $drop2 .
-                '
+        $drop2 .
+        '
                         <p>and Below is a Drop-Down that shows the generated subscription links from each Location, providing users with a variety of options to choose from.</p>
                         ' .
-                $drop3 .
-                '
+        $drop3 .
+        '
                         <p>This Drop-Downs provides a quick reference for the different subscription links available through 4-0-4 VPN, allowing users to easily select the one that best suits their needs.</p>
                     </div>
                     <div class="col-12 footer">
                         <h4>The Last Word</h4>
                         <p>4-0-4 VPN is more than just a VPN service; it\'s a movement towards a more secure and open internet. By leveraging the power of community and open-source technology, 4-0-4 VPN is paving the way for a future where online privacy is a fundamental right for all.</p>
                         <div>
-                            <a href="https://github.com/nyeinkokoaung/free-vpn" target="_blank"><i class="bi bi-github"></i></a>
+                            <a href="https://github.com/nyeinkokoaung404/free-vpn" target="_blank"><i class="bi bi-github"></i></a>
                             <a href="https://x.com/nkka404" target="_blank"><i class="bi bi-twitter"></i></a>
                             <a href="https://t.me/nkka404" target="_blank"><i class="bi bi-telegram"></i></a>
                         </div>
@@ -1525,6 +1613,12 @@ $botToken = getenv("TELEGRAM_BOT_TOKEN");
 $keyboard = [
     [
         [
+            "text" => "🌐 NikaNG",
+            "url" => "https://github.com/mahsanet/NikaNG/releases/latest",
+        ]
+    ],
+    [
+        [
             "text" => "📲 STREISAND",
             "url" => maskUrl("streisand://import/" . $randType),
         ],
@@ -1535,17 +1629,23 @@ $keyboard = [
     ]
 ];
 
+$reply_markup = [
+    'inline_keyboard' => $keyboard
+];
+
 $message = "⏱ {$tehranTime}
 
-<blockquote>📥 Copy => Import config from Clipboard (<a href='https://github.com/mahsanet/NikaNG/releases/latest'>NikaNG</a>): </blockquote>
----- 𝗖𝗢𝗣𝗬 ----
+---- کپی کنید ----
 🔎 <code>{$randType}</code>
----- 𝗖𝗢𝗣𝗬 ----
+---- کپی کنید ----
 
----- 𝗠𝗢𝗥𝗘 ----
-🚹 <a href='https://nyeinkokoaung404.github.io/free-vpn/'>4.0.4 𝗚𝗜𝗧𝗛𝗨𝗕 𝗣𝗔𝗚𝗘</a>
----- 𝗠𝗢𝗥𝗘 ----
+---- کانفیگ بیشتر ----
+🚹 <a href='https://nyeinkokoaung404.github.io/free-vpn/'>پیج گیتهاب 𝗛.𝗜.𝗡</a>
+---- کانفیگ بیشتر ----
 
-💬 <a href='https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=https://t.me/share/url?url=https://t.me/Here_is_Nowhere&text=Your%20Gateway%20to%20Secure%20and%20Free%20Internet%20Access%0AHiN%20VPN%20is%20an%20open-source%20project%20designed%20to%20provide%20secure,%20unrestricted%20internet%20access.%20It%20uses%20Telegram%20for%20collecting%20and%20distributing%20VPN%20configurations,%20offering%20a%20community-driven%20approach%20to%20online%20privacy.'>𝗖𝗟𝗜𝗖𝗞 𝗧𝗢 𝗦𝗛𝗔𝗥𝗘 4.0.4!</a>";
+💬 <a href='https://t.me/share/url?url=https://t.me/nkka404&text=%D8%AF%D8%B1%D9%88%D8%A7%D8%B2%D9%87%20%D8%B4%D9%85%D8%A7%20%D8%A8%D8%B1%D8%A7%DB%8C%20%D8%AF%D8%B3%D8%AA%D8%B1%D8%B3%DB%8C%20%D8%A8%D9%87%20%D8%A7%DB%8C%D9%86%D8%AA%D8%B1%D9%86%D8%AA%20%D8%A7%D9%85%D9%86%20%D9%88%20%D8%B1%D8%A7%DB%8C%DA%AF%D8%A7%D9%86%0A%D9%BE%D8%B1%D9%88%DA%98%D9%87%20HiN%20VPN%20%DB%8C%DA%A9%20%D9%BE%D8%B1%D9%88%DA%98%D9%87%20%D9%85%D8%AA%D9%86%20%D8%A8%D8%A7%D8%B2%20%D8%A7%D8%B3%D8%AA%20%DA%A9%D9%87%20%D8%B7%D8%B1%D8%A7%D8%AD%DB%8C%20%D8%B4%D8%AF%D9%87%20%D8%AA%D8%A7%20%D8%AF%D8%B3%D8%AA%D8%B1%D8%B3%DB%8C%20%D8%A7%D9%85%D9%86%20%D9%88%20%D8%A8%D8%AF%D9%88%D9%86%20%D9%85%D8%AD%D8%AF%D9%88%D8%AF%DB%8C%D8%AA%20%D8%A8%D9%87%20%D8%A7%DB%8C%D9%86%D8%AA%D8%B1%D9%86%D8%AA%20%D8%B1%D8%A7%20%D9%81%D8%B1%D8%A7%D9%87%D9%85%20%DA%A9%D9%86%D8%AF.%20%D8%A7%D8%B2%20%D8%AA%D9%84%DA%AF%D8%B1%D8%A7%D9%85%20%D8%A8%D8%B1%D8%A7%DB%8C%20%D8%AC%D9%85%D8%B9%20%D8%A2%D9%88%D8%B1%DB%8C%20%D9%88%20%D8%AA%D9%88%D8%B2%DB%8C%D8%B9%20%D8%AA%D9%86%D8%B8%DB%8C%D9%85%D8%A7%D8%AA%20VPN%20%D8%A7%D8%B3%D8%AA%D9%81%D8%A7%D8%AF%D9%87%20%D9%85%DB%8C%20%DA%A9%D9%86%D8%AF%D8%8C%20%D9%88%20%DB%8C%DA%A9%20%D8%B1%D9%88%DB%8C%DA%A9%D8%B1%D8%AF%20%D9%85%D8%A8%D8%AA%D9%86%DB%8C%20%D8%A8%D8%B1%20%D8%AC%D8%A7%D9%85%D8%B9%D9%87%20%D8%A8%D8%B1%D8%A7%DB%8C%20%D8%AD%D9%81%D8%B8%20%D8%AD%D8%B1%DB%8C%D9%85%20%D8%AE%D8%B5%D9%88%D8%B5%DB%8C%20%D8%A2%D9%86%D9%84%D8%A7%DB%8C%D9%86%20%D8%A7%D8%B1%D8%A7%D8%A6%D9%87%20%D9%85%DB%8C%20%D8%AF%D9%87%D8%AF'>برای اشتراک گذاری 𝗛.𝗜.𝗡 کلیک کنید!</a>
 
-sendMessage($botToken, -1002043507701, $message, "html", $keyboard);
+💲 <a href='https://t.me/HiNDONATEBOT?start=start'>برای حمایت مالی از 4.0.4  با پرداخت ریالی (کارت بانکی) کلیک کنید!</a>";
+
+$generateQRCode = generateQRCode($randType, '500x500', 'UTF-8', 'UTF-8', 'L', '0-0-0', '255-255-255', '2', '1', 'png');
+sendPhoto($botToken, -1002043507701, $generateQRCode, $message, 'HTML', false, null, $reply_markup);
